@@ -18,6 +18,15 @@ class Tools {
     );
   }
 
+  static Container preloader({double height:140.00}) {
+    return new Container(
+      width: double.infinity,
+      height: height,
+      color: Colors.grey[200],
+      child: Tools.prograssBar(),
+    );
+  }
+
   static BoxDecoration boxDecoration({Color mColor: Colors.white}) {
     return BoxDecoration(
       boxShadow: <BoxShadow>[
@@ -29,6 +38,10 @@ class Tools {
       ],
       color: mColor,
     );
+  }
+
+  static TextDirection AppDirection({bool reverse: false}) {
+    return (reverse ? TextDirection.ltr : TextDirection.rtl);
   }
 
 /*

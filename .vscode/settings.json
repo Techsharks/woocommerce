@@ -1,0 +1,5 @@
+{
+    "diffEditor.maxComputationTime": 6000,
+    "editor.minimap.maxColumn": 2200,
+    "editor.wordWrapColumn": 200
+}

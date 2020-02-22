@@ -11,8 +11,7 @@ class MainHomePage extends StatefulWidget {
   _MainHomePageState createState() => _MainHomePageState(tabController);
 }
 
-class _MainHomePageState extends State<MainHomePage>
-    with SingleTickerProviderStateMixin {
+class _MainHomePageState extends State<MainHomePage> with SingleTickerProviderStateMixin, AutomaticKeepAliveClientMixin {
   TabController _tabController;
 
   _MainHomePageState(this._tabController);
@@ -22,21 +21,20 @@ class _MainHomePageState extends State<MainHomePage>
     super.initState();
   }
 
-  TabController getTabController() {
+  TabController getTabController(){
     return widget.tabController;
   }
 
   @override
   Widget build(BuildContext context) {
     return new TabBarView(
-      controller: this._tabController,
+      controller: widget.tabController,
       children: List.generate(widget.myList.length, (index) {
-        return new Container(
-          child: new Center(
-            child: new Text('${widget.myList[index].title}'),
-          ),
-        );
+        return widget.myList[index].widget;
       }),
     );
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }
