@@ -5,15 +5,14 @@ class DatabaseProvider {
   Database db;
   String path;
 
-  Future open({String dbName: 'sharks.db', versionDb: 2}) async {
+  Future<bool> open({String dbName: 'sharks.db', versionDb: 2}) async {
     var databasesPath = await getDatabasesPath();
     path = join(databasesPath, dbName);
 
     //  print('databasesPath: $databasesPath');
-     print('_path: $path');
+    //  print('_path: $path');
 
-    db = await openDatabase(path, version: versionDb,
-        onCreate: (Database db, int version) async {
+    db = await openDatabase(path, version: versionDb, onCreate: (Database db, int version) async {
       await db.execute('''
                   create table products ( 
                       id integer primary key, 
@@ -94,6 +93,8 @@ class DatabaseProvider {
                       product_id integer primary key)
                   ''');
     });
+
+    return true;
   }
 
   Future close() async => db.close();

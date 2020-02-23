@@ -4,6 +4,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:woocommerce/model/product.dart';
+import 'package:woocommerce/pages/single/single_product.dart';
 import 'package:woocommerce/tools/tools.dart';
 
 class MainSlideshow extends StatefulWidget {
@@ -29,7 +30,7 @@ class MainSlideshowState extends State<MainSlideshow> {
   Widget build(BuildContext context) {
     return Container(
       decoration: Tools.boxDecoration(),
-      padding:EdgeInsets.only(bottom: 4),
+      padding: EdgeInsets.only(bottom: 4),
       child: CarouselSlider(
         height: widget.height,
         aspectRatio: 2.0,
@@ -38,10 +39,14 @@ class MainSlideshowState extends State<MainSlideshow> {
             builder: (BuildContext context) {
               return new GestureDetector(
                 onTap: () {
-                  // Navigator.push(
-                  //   context,
-                  //   MaterialPageRoute(builder: (BuildContext context) => SinglePost(post: post)),
-                  // );
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (BuildContext context) => SingleProduct(
+                        product: product,
+                      ),
+                    ),
+                  );
                 },
                 child: Container(
                   width: MediaQuery.of(context).size.width,

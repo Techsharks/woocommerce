@@ -3,6 +3,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:woocommerce/model/product.dart';
+import 'package:woocommerce/pages/single/single_product.dart';
 import 'package:woocommerce/tools/tools.dart';
 
 class ProductSlider extends StatefulWidget {
@@ -49,41 +50,53 @@ class ProductSliderState extends State<ProductSlider> {
                     scrollDirection: Axis.horizontal,
                     itemCount: widget.products.length,
                     itemBuilder: (BuildContext context, int index) {
-                      return new Column(
-                        children: <Widget>[
-                          Expanded(
-                            child: Container(
-                              margin: EdgeInsets.only(left: 2, right: 2),
-                              padding: EdgeInsets.only(top: 5),
-                              width: 150,
-                              child: Hero(
-                                tag: '${widget.products[index].id}_${widget.sectionTag}',
-                                child: CachedNetworkImage(
-                                  imageUrl: widget.products[index].images[0].src,
-                                  imageBuilder: (context, imageProvider) => Container(
-                                    decoration: BoxDecoration(
-                                      image: DecorationImage(
-                                        image: imageProvider,
-                                        fit: BoxFit.cover,
+                      return new GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (BuildContext context) => SingleProduct(
+                                product: widget.products[index],
+                              ),
+                            ),
+                          );
+                        },
+                        child: Column(
+                          children: <Widget>[
+                            Expanded(
+                              child: Container(
+                                margin: EdgeInsets.only(left: 2, right: 2),
+                                padding: EdgeInsets.only(top: 5),
+                                width: 150,
+                                child: Hero(
+                                  tag: '${widget.products[index].id}_${widget.sectionTag}',
+                                  child: CachedNetworkImage(
+                                    imageUrl: widget.products[index].images[0].src,
+                                    imageBuilder: (context, imageProvider) => Container(
+                                      decoration: BoxDecoration(
+                                        image: DecorationImage(
+                                          image: imageProvider,
+                                          fit: BoxFit.cover,
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                  placeholder: (context, url) => new Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    crossAxisAlignment: CrossAxisAlignment.end,
-                                    children: <Widget>[
-                                      Tools.preloader(),
-                                    ],
-                                  ),
-                                  errorWidget: (context, url, error) => Center(
-                                    child: Icon(Icons.cloud_off),
+                                    placeholder: (context, url) => new Column(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      crossAxisAlignment: CrossAxisAlignment.end,
+                                      children: <Widget>[
+                                        Tools.preloader(),
+                                      ],
+                                    ),
+                                    errorWidget: (context, url, error) => Center(
+                                      child: Icon(Icons.cloud_off),
+                                    ),
                                   ),
                                 ),
                               ),
                             ),
-                          ),
-                          new Text(' ؋ ${widget.products[index].price} - ${widget.products[index].id}')
-                        ],
+                            new Text(' ؋ ${widget.products[index].price} - ${widget.products[index].id}')
+                          ],
+                        ),
                       );
                     },
                   ),

@@ -28,7 +28,7 @@ class ProductGridState extends State<ProductGrid> {
   Widget build(BuildContext context) {
     return (widget.products.length > 0)
         ? new SizedBox(
-            height: (widget.height > 0) ? widget.height : widget.products.length * 106.6666666667,
+            height: (widget.height > 0) ? widget.height : widget.products.length * 110.6666666667,
             child: new Container(
               margin: EdgeInsets.only(
                 top: 10,
@@ -56,6 +56,7 @@ class ProductGridState extends State<ProductGrid> {
                         child: new Column(
                           children: <Widget>[
                             Expanded(
+                              flex: 2,
                               child: CachedNetworkImage(
                                 height: 50,
                                 imageUrl: widget.products[index].images[0].src,
@@ -79,11 +80,12 @@ class ProductGridState extends State<ProductGrid> {
                                 ),
                               ),
                             ),
-                            new Text(
+                            new Expanded(
+                                child: new Text(
                               '${widget.products[index].name}',
                               style: TextStyle(),
                               textAlign: TextAlign.center,
-                            )
+                            ))
                           ],
                         ),
                       );

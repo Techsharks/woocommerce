@@ -44,13 +44,13 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
       length: myList.length,
       vsync: _mainHomePage.createState(),
     );
-
-    _getMenu();
     _initDatabase();
   }
 
   _initDatabase() async {
-    await (new DatabaseProvider()).open();
+    await (new DatabaseProvider()).open().then((value) {
+      _getMenu();
+    });
   }
 
   _addListener() {
@@ -62,12 +62,12 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
 
   _getMenu() async {
     await (new ProductProvider()).getMenuOffline().then((List<DynamicTabContent> data) async {
-      if (data.length > 0) {
+      if (mounted && data.length > 0) {
         // print('offline menu: ${data.toList().toString()}');
         _setMenu(data);
       }
       await (new ApiProvider()).getMenu().then((List<DynamicTabContent> data) {
-        if (data.length > 0) {
+        if (mounted && data.length > 0) {
           // print('offline menu: ${data.toList().toString()}');
           _setMenu(data);
         }
@@ -90,7 +90,8 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
   @override
   void dispose() {
     super.dispose();
-    _tabController.dispose();
+    // faiz
+    // _tabController.dispose();
   }
 
   @override

@@ -1,4 +1,5 @@
 // created by faiz
+import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
@@ -18,12 +19,14 @@ class Tools {
     );
   }
 
-  static Container preloader({double height:140.00}) {
+  static Container preloader({double height: 140.00}) {
     return new Container(
       width: double.infinity,
       height: height,
       color: Colors.grey[200],
-      child: Tools.prograssBar(),
+      child: Center(
+        child: Tools.prograssBar(),
+      ),
     );
   }
 
@@ -80,5 +83,19 @@ class Tools {
             ],
           )
         : new Column();
+  }
+
+  static mBadge(int counter) {
+    return Badge(
+      position: new BadgePosition(right: -15, top: -20),
+      padding: EdgeInsets.all(5),
+      showBadge: (counter == 0) ? false : true,
+      animationType: BadgeAnimationType.slide,
+      badgeContent: Text('$counter', style: TextStyle(color: Colors.white)),
+      child: Icon(
+        Icons.shopping_basket,
+        color: Colors.white,
+      ),
+    );
   }
 }

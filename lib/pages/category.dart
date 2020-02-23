@@ -15,9 +15,8 @@ class CategoryPage extends StatefulWidget {
   _CategoryPageState createState() => _CategoryPageState();
 }
 
-class _CategoryPageState extends State<CategoryPage> {
+class _CategoryPageState extends State<CategoryPage> with AutomaticKeepAliveClientMixin<CategoryPage> {
   int offset = 0;
-
   RefreshController _refreshController = RefreshController(initialRefresh: false);
   List<Product> bestSallerProductList = List();
   List<Product> recentProductsList = List();
@@ -26,19 +25,29 @@ class _CategoryPageState extends State<CategoryPage> {
   var queryStr = '?limit=10&is_popular=1&meta_key=total_sales';
 
   void _onRefresh() async {
-    // if failed,use refreshFailed()
-    _refreshController.refreshCompleted();
+    _loadBestSallerByCat();
+    offset = 0;
+    await (new ApiProvider()).getProducts(endPoint: "get_product?limit=10&cat=${widget.catId}&offset=0").then((List<Product> productList) {
+      if (mounted && productList.length > 0) {
+        recentProductsList.clear();
+        offset += 10;
+        setState(() {
+          recentProductsList.addAll(productList);
+        });
+        _refreshController.refreshCompleted(resetFooterState: true);
+      } else {
+        _refreshController.refreshFailed();
+      }
+    });
   }
 
   void _onLoading() async {
     await (new ApiProvider()).getProducts(endPoint: "get_product?limit=10&cat=${widget.catId}&offset=$offset").then((List<Product> productList) {
       if (mounted && productList.length > 0) {
-        // recentProductsList.clear();
         offset += 10;
         setState(() {
           recentProductsList.addAll(productList);
         });
-
         _refreshController.loadComplete();
       } else {
         _refreshController.loadNoData();
@@ -57,6 +66,9 @@ class _CategoryPageState extends State<CategoryPage> {
   @override
   void dispose() {
     super.dispose();
+    _onLoading();
+    _onRefresh();
+    _loadBestSallerByCat();
   }
 
   _loadBestSallerByCat() async {
@@ -89,9 +101,9 @@ class _CategoryPageState extends State<CategoryPage> {
           } else if (mode == LoadStatus.loading) {
             body = CupertinoActivityIndicator();
           } else if (mode == LoadStatus.failed) {
-            body = Text("Load Failed!Click retry!");
+            body = Text("Load Failed! Click retry!");
           } else if (mode == LoadStatus.canLoading) {
-            body = Text("release to load more");
+            body = Text("Release to load more");
           } else {
             body = Text("No more Data");
           }
@@ -128,4 +140,7 @@ class _CategoryPageState extends State<CategoryPage> {
           })),
     );
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }
