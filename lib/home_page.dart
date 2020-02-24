@@ -11,6 +11,8 @@ import 'model/dynamicTabContent.dart';
 import 'pages/home.dart';
 import 'pages/main_page/main_home.dart';
 
+int globalCartCounter = 1;
+
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
 
@@ -50,6 +52,19 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
   _initDatabase() async {
     await (new DatabaseProvider()).open().then((value) {
       _getMenu();
+      _loadCartShoppingList();
+    });
+  }
+
+  _loadCartShoppingList({bool reset: false}) async {
+    await (new ProductProvider()).getCartCount().then((int count) {
+      setState(() {
+        if (reset) {
+          globalCartCounter = count;
+        } else {
+          globalCartCounter += count;
+        }
+      });
     });
   }
 
@@ -122,9 +137,22 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
           onPressed: () {},
         ),
         actions: <Widget>[
-          new IconButton(
-            icon: new Icon(Icons.add_shopping_cart),
-            onPressed: () {},
+          GestureDetector(
+            onTap: () {
+              print('list cart');
+            },
+            child: new Container(
+              // padding: EdgeInsets.all(10),
+              margin: EdgeInsets.all(10),
+              height: 40,
+              width: 40,
+              alignment: Alignment.center,
+              decoration: new BoxDecoration(
+                borderRadius: BorderRadius.circular(100),
+                color: Colors.blue,
+              ),
+              child: Tools.mBadge(globalCartCounter),
+            ),
           )
         ],
         bottom: (this._tabIndex == 0)

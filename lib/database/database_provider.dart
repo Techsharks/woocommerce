@@ -92,6 +92,12 @@ class DatabaseProvider {
                   create table favorite (
                       product_id integer primary key)
                   ''');
+
+      await db.execute('''
+                  create table cart ( 
+                      id integer primary key autoincrement, 
+                      product_id integer not null)
+                  ''');
     });
 
     return true;

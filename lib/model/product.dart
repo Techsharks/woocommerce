@@ -25,6 +25,7 @@ class Product {
   int shipping_taxable;
   int reviews_allowed;
   int featured;
+  int isFavorite;
 
   String name;
   String slug;
@@ -75,6 +76,7 @@ class Product {
     this.in_stock,
     this.purchasable,
     this.is_virtual,
+    this.isFavorite,
     this.downloadable,
     this.manage_stock,
     this.backorders_allowed,
@@ -155,6 +157,7 @@ class Product {
       shipping_required: (_json['shipping_required'] != null) ? _json['shipping_required'] : 0,
       shipping_taxable: (_json['shipping_taxable'] != null) ? _json['shipping_taxable'] : 0,
       reviews_allowed: (_json['reviews_allowed'] != null) ? _json['reviews_allowed'] : 0,
+      isFavorite: (_json['isFavorite'] != null) ? _json['isFavorite'] : 0,
 
       // strings
       name: (_json['name'] != null) ? _json['name'] : null,

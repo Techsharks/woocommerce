@@ -94,7 +94,7 @@ class ProductSliderState extends State<ProductSlider> {
                                 ),
                               ),
                             ),
-                            new Text(' ؋ ${widget.products[index].price} - ${widget.products[index].id}')
+                            new Text('${Tools.getCurrencySymbol()}${widget.products[index].price} - ${widget.products[index].id}')
                           ],
                         ),
                       );

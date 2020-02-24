@@ -88,7 +88,7 @@ class Tools {
   static mBadge(int counter) {
     return Badge(
       position: new BadgePosition(right: -15, top: -20),
-      padding: EdgeInsets.all(5),
+      padding: EdgeInsets.all(8),
       showBadge: (counter == 0) ? false : true,
       animationType: BadgeAnimationType.slide,
       badgeContent: Text('$counter', style: TextStyle(color: Colors.white)),
@@ -97,5 +97,9 @@ class Tools {
         color: Colors.white,
       ),
     );
+  }
+
+  static getCurrencySymbol(){
+    return ' ؋ ';
   }
 }

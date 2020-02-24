@@ -147,19 +147,28 @@ class ProductProvider extends DatabaseProvider {
     return listProducts;
   }
 
-  Future<int> saveToFavorite(Product post, int isFavorite) async {
-    int id = 0;
-    if (isFavorite == 1) {
-      await db.rawDelete('DELETE FROM favorite WHERE product_id = ?', [post.id]).then((id) {
+  Future<Product> getSingleProduct(int product_id) async {
+    await open();
+    List<Map> maps = await db.rawQuery('SELECT p.*, IFNULL(f.product_id, 0) as isFavorite FROM products as p left JOIN favorite as f ON p.id=f.product_id where p.id=$product_id');
+    print('single product: ${maps.toList().toString()}');
+    return Product.fromJson(maps[0]);
+  }
+
+  Future<int> saveToFavorite(Product product, int isFavorite) async {
+    await open();
+    int resualt = 0;
+    if (isFavorite >= 1) {
+      await db.rawDelete('DELETE FROM favorite WHERE product_id = ?', [product.id]).then((id) {
         print('removed from favorite product ID: $id');
-        return id;
+        resualt = 0;
       });
     } else {
-      await db.insert('favorite', {'product_id': post.id}, conflictAlgorithm: ConflictAlgorithm.replace).then((id) {
+      await db.insert('favorite', {'product_id': product.id}, conflictAlgorithm: ConflictAlgorithm.replace).then((id) {
         print('added to favorite product ID: $id');
-        return id;
+        resualt = 1;
       });
     }
+    return resualt;
   }
 
   Future<int> countPosts({bool deleteAlso: false}) async {
@@ -171,6 +180,23 @@ class ProductProvider extends DatabaseProvider {
     }
     print('local posts: $count');
     return count;
+  }
+
+  Future<int> getCartCount() async {
+    await open();
+    int count = Sqflite.firstIntValue(await db.rawQuery('SELECT COUNT(*) FROM cart'));
+    print('cart count: $count');
+    return count;
+  }
+
+  Future<int> addToCart(Product product) async {
+    await open();
+    int insertedID = 0;
+    await db.insert('cart', {'product_id': product.id}).then((id) {
+      print('product added to car RowID: $id');
+      insertedID = id;
+    });
+    return insertedID;
   }
 
   Future<List<DynamicTabContent>> getMenuOffline({id: 1}) async {
