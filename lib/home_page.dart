@@ -1,17 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:woocommerce/database/database_provider.dart';
 import 'package:woocommerce/database/product_provider.dart';
+import 'package:woocommerce/pages/cart_page.dart';
 import 'package:woocommerce/pages/main_page/main_favorite.dart';
 import 'package:woocommerce/pages/main_page/main_user.dart';
 import 'package:woocommerce/tools/SharkLocalizations.dart';
 import 'package:woocommerce/tools/tools.dart';
-
 import 'components/ApiProvider.dart';
 import 'model/dynamicTabContent.dart';
+import 'model/woo_user.dart';
 import 'pages/home.dart';
 import 'pages/main_page/main_home.dart';
 
-int globalCartCounter = 1;
+int GlobalCartCounter = 0;
+WooUser GlobalWooUser = new WooUser();
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
@@ -60,9 +62,9 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
     await (new ProductProvider()).getCartCount().then((int count) {
       setState(() {
         if (reset) {
-          globalCartCounter = count;
+          GlobalCartCounter = count;
         } else {
-          globalCartCounter += count;
+          GlobalCartCounter += count;
         }
       });
     });
@@ -76,18 +78,20 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
   }
 
   _getMenu() async {
-    await (new ProductProvider()).getMenuOffline().then((List<DynamicTabContent> data) async {
-      if (mounted && data.length > 0) {
-        // print('offline menu: ${data.toList().toString()}');
-        _setMenu(data);
-      }
-      await (new ApiProvider()).getMenu().then((List<DynamicTabContent> data) {
+    try {
+      await (new ProductProvider()).getMenuOffline().then((List<DynamicTabContent> data) async {
         if (mounted && data.length > 0) {
-          // print('offline menu: ${data.toList().toString()}');
           _setMenu(data);
         }
+        await (new ApiProvider()).getMenu().then((List<DynamicTabContent> data2) {
+          if (mounted && data2.length > 0) {
+            _setMenu(data2);
+          }
+        });
       });
-    });
+    } catch (e) {
+      print('error in home_page.dart ${StackTrace.current}');
+    }
   }
 
   _setMenu(List<DynamicTabContent> res) async {
@@ -105,8 +109,6 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
   @override
   void dispose() {
     super.dispose();
-    // faiz
-    // _tabController.dispose();
   }
 
   @override
@@ -139,7 +141,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
         actions: <Widget>[
           GestureDetector(
             onTap: () {
-              print('list cart');
+              Navigator.push(context, MaterialPageRoute(builder: (context) => new CartPage()));
             },
             child: new Container(
               // padding: EdgeInsets.all(10),
@@ -151,7 +153,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                 borderRadius: BorderRadius.circular(100),
                 color: Colors.blue,
               ),
-              child: Tools.mBadge(globalCartCounter),
+              child: Tools.mBadge(GlobalCartCounter),
             ),
           )
         ],

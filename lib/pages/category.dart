@@ -66,25 +66,29 @@ class _CategoryPageState extends State<CategoryPage> with AutomaticKeepAliveClie
   @override
   void dispose() {
     super.dispose();
-    _onLoading();
-    _onRefresh();
-    _loadBestSallerByCat();
+    // _onLoading();
+    // _onRefresh();
+    // _loadBestSallerByCat();
   }
 
   _loadBestSallerByCat() async {
-    await (new ApiProvider()).getProducts(endPoint: "get_product$queryStr").then((List<Product> productList) {
-      if (mounted && productList.length > 0) {
-        bestSallerProductList.clear();
-        setState(() {
-          bestSallerHide = false;
-          bestSallerProductList.addAll(productList);
-        });
-      } else {
-        setState(() {
-          bestSallerHide = true;
-        });
-      }
-    });
+    try {
+      await (new ApiProvider()).getProducts(endPoint: "get_product$queryStr").then((List<Product> productList) {
+        if (mounted && productList.length > 0) {
+          bestSallerProductList.clear();
+          setState(() {
+            bestSallerHide = false;
+            bestSallerProductList.addAll(productList);
+          });
+        } else {
+          setState(() {
+            bestSallerHide = true;
+          });
+        }
+      });
+    } catch (e) {
+      print('error in _loadBestSallerByCat category.dart');
+    }
   }
 
   @override
@@ -132,7 +136,7 @@ class _CategoryPageState extends State<CategoryPage> with AutomaticKeepAliveClie
                     );
             } else {
               return new ProductGrid(
-                height: MediaQuery.of(context).size.height - 200,
+                height: MediaQuery.of(context).size.height - 170,
                 products: this.recentProductsList,
                 title: 'محصولات جدید',
               );

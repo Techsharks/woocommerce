@@ -26,7 +26,7 @@ class _HomePageState extends State<HomePage> {
     'part1': {'title': 'سوپر مارکت ویژه', 'catId': 42, 'limit': 10, 'endpoint': '?limit=10&cat=42'},
     'part2': {'title': 'پربیننده‌ها', 'catId': 0, 'limit': 10, 'endpoint': '?limit=10&is_popular=1&meta_key=wpb_post_views_count'},
     'part3': {'title': 'پرفروش‌ها', 'catId': 0, 'limit': 10, 'endpoint': '?limit=10&is_popular=1&meta_key=total_sales'},
-    'part4': {'title': 'محصولات ویژه', 'catId': 72, 'limit': 10, 'endpoint': '?limit=6&cat=72'},
+    'part4': {'title': 'محصولات ویژه', 'catId': 72, 'limit': 6, 'endpoint': '?limit=6&cat=72'},
   };
 
   RefreshController _refreshController = RefreshController(initialRefresh: false);
@@ -191,6 +191,7 @@ class _HomePageState extends State<HomePage> {
             );
           } else {
             return new ProductGrid(
+              height: 680,
               products: this._productList4,
               title: this._map['part4']['title'],
             );

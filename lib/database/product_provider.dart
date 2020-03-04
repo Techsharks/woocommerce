@@ -1,10 +1,12 @@
 import 'package:flutter/rendering.dart';
 import 'package:woocommerce/database/database_provider.dart';
 import 'package:woocommerce/model/dynamicTabContent.dart';
+import 'package:woocommerce/model/order.dart';
 import 'package:woocommerce/model/product.dart';
 import 'dart:convert';
 import 'package:sqflite/sqflite.dart';
 import 'package:woocommerce/model/product_image.dart';
+import 'package:woocommerce/model/woo_user.dart';
 import 'package:woocommerce/pages/category.dart';
 import 'dart:convert';
 
@@ -133,17 +135,34 @@ class ProductProvider extends DatabaseProvider {
         images: productImageList,
       ));
     });
+    await close();
     return listProducts;
   }
 
   Future<List<Product>> getFavoriteProductsOffline({limit: 10, offest: 0}) async {
+    await open();
     List<Map> maps = await db.rawQuery('''
-    SELECT p.*, IFNULL(f.product_id, 0) as isFavorite FROM posts as p inner JOIN favorite as f ON p.id=f.product_id ORDER BY p.id LIMIT $offest, $limit
+    SELECT p.*, IFNULL(f.product_id, 0) as isFavorite FROM products as p inner JOIN favorite as f ON p.id=f.product_id ORDER BY p.id LIMIT $offest, $limit
     ''');
+
+    print('maps favorite: ${maps.length}');
+
     List<Product> listProducts = [];
     maps.forEach((product) {
-      listProducts.add(Product.fromJson(product));
+      List<ProductImage> productImageList = List();
+      if (product['images'] != null && product['images'].length > 0) {
+        json.decode(product['images']).forEach((img) {
+          productImageList.add(new ProductImage.fromJson(img));
+        });
+      }
+
+      listProducts.add(Product.fromJson(
+        product,
+        images: productImageList,
+      ));
     });
+
+    await close();
     return listProducts;
   }
 
@@ -196,8 +215,21 @@ class ProductProvider extends DatabaseProvider {
       print('product added to car RowID: $id');
       insertedID = id;
     });
+    await close();
     return insertedID;
   }
+
+
+  Future<int> removeFormCart(Product product) async {
+    await open();
+    int insertedID = 0;
+    await db.insert('cart', {'product_id': product.id}).then((id) {
+      print('product added to car RowID: $id');
+      insertedID = id;
+    });
+    return insertedID;
+  }
+  
 
   Future<List<DynamicTabContent>> getMenuOffline({id: 1}) async {
     await open();
@@ -222,6 +254,10 @@ class ProductProvider extends DatabaseProvider {
     return menu;
   }
 
+  Future<WooUser> saveWooUser(WooUser user) {
+    return null;
+  }
+
   Future<bool> deleteDB() async {
     try {
       print('try to delete db...');
@@ -239,16 +275,34 @@ class ProductProvider extends DatabaseProvider {
     return false;
   }
 
-  // Future<ProductCategory> insertCat(ProductCategory cat,
-  //     {conflictAlgorithm: ConflictAlgorithm.replace}) async {
-  //   cat.id = await db.insert(_tableCategories, cat.toMap(),
-  //       conflictAlgorithm: conflictAlgorithm);
-  //   return cat;
-  // }
+  Future<List<Order>> getOrdersOffline({int user_id}) async {
+    await open();
+    List<Map> maps = await db.rawQuery('''
+    select p.*, count(p.id) as quantity, count( cast(p.price AS INTEGER) ) as total_per_item , c.id as order_id from cart as c inner join products as p on p.id = c.product_id group by c.product_id
+    ''');
 
-  // Future<bool> insertAllCats(List<ProductCategory> cat) async {
-  //   await Future.wait(cat.map((cat) async => await this.insertCat(cat)));
-  //   return true;
-  // }
+    print('maps getOrdersOffline: ${maps.length}');
 
+    List<Order> orderList = List();
+
+    maps.forEach((product) {
+      List<ProductImage> productImageList = List();
+      if (product['images'] != null && product['images'].length > 0) {
+        json.decode(product['images']).forEach((img) {
+          productImageList.add(new ProductImage.fromJson(img));
+        });
+      }
+
+      orderList.add(
+        new Order.fromJson(
+          product,
+          mProduct: Product.fromJson(product, images: productImageList),
+        ),
+      );
+    });
+
+    await close();
+
+    return orderList;
+  }
 }

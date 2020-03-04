@@ -1,17 +1,18 @@
 class ProductImage {
   final int id;
   String src;
-  String src_small;
+  String small;
   String src_large;
   String name;
 
-  ProductImage({this.id, this.name, this.src, this.src_large, this.src_small});
+  ProductImage({this.id, this.name, this.src, this.src_large, this.small});
 
   factory ProductImage.fromJson(Map<String, dynamic> _json) {
     return ProductImage(
       id: _json['id'],
       src: _json['src'],
       name: _json['name'],
+      small: _json['small'],
     );
   }
 
@@ -20,6 +21,7 @@ class ProductImage {
       'id': id,
       'src': src,
       'name': name,
+      'small': small,
     };
   }
 }

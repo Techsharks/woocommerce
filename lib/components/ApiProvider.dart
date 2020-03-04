@@ -3,17 +3,22 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:woocommerce/database/product_provider.dart';
+import 'package:woocommerce/home_page.dart';
 import 'package:woocommerce/model/dynamicTabContent.dart';
 import 'package:woocommerce/model/product.dart';
 import 'package:woocommerce/model/product_category.dart';
 import 'package:woocommerce/model/product_image.dart';
+import 'package:woocommerce/model/woo_user.dart';
 import 'package:woocommerce/pages/category.dart';
+import 'package:woocommerce/tools/helper.dart';
+import 'package:woocommerce/tools/tools.dart';
 import "dart:core";
 import 'WooCommerceAPI.dart';
 
 class ApiProvider {
   // static final String baseUrl = 'https://afthinkroom.com/woo';
   static final String baseUrl = 'https://dos.af';
+  static var header = {'Content-Type': 'application/json'};
   var client = new http.Client();
   ProductProvider db = new ProductProvider();
 
@@ -98,5 +103,59 @@ class ApiProvider {
 
     print('done all');
     return productList;
+  }
+
+  Future<WooUser> createUser(WooUser user) async {
+    try {
+      var userInfo = {
+        'user_email': user.user_email,
+        'user_pass': user.user_pass,
+        'display_name': user.display_name,
+      };
+      print('saveing userInfo ${userInfo}');
+      var response = await client.post('$baseUrl/wp-json/wc/v3/create_user', body: userInfo);
+
+      if (response.statusCode == 200) {
+        var responseBody = json.decode(response.body);
+        if (responseBody['status'] == Helper.CREATED) {
+          GlobalWooUser = new WooUser.fromJson(responseBody);
+        } else {
+          GlobalWooUser.status = Helper.EXIST;
+        }
+      }
+    } catch (e) {
+      print('error in createing user ${e}');
+    }
+    
+    return GlobalWooUser;
+  }
+
+  Future<WooUser> LoginUser({String email, String password}) async {
+    try {
+      var userInfo = {
+        'email': email,
+        'password': password,
+      };
+      var response = await client.post('$baseUrl/wp-json/wc/v3/login_customer', body: userInfo);
+
+      var responseBody = json.decode(response.body);
+      if (responseBody['status'] == Helper.LOGIN_SUCCESS) {
+        GlobalWooUser = new WooUser.fromJson(responseBody);
+        GlobalWooUser.user_pass = password;
+        Tools.setCookieUserObject(GlobalWooUser).then((res) {
+          print('local Saved user: $res');
+        });
+        print('login success info: ${GlobalWooUser.toMap()}');
+      } else if (responseBody['status'] == Helper.LOGIN_FAILED) {
+        GlobalWooUser = new WooUser(status: Helper.LOGIN_FAILED);
+        print('login failed !');
+      }
+      return GlobalWooUser;
+    } catch (e) {
+      print('error in login ${e}');
+      GlobalWooUser = new WooUser(status: Helper.INTERNET_CONNECTION_ERROR);
+    }
+
+    return GlobalWooUser;
   }
 }

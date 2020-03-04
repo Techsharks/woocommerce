@@ -2,6 +2,9 @@
 import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:woocommerce/home_page.dart';
+import 'package:woocommerce/model/woo_user.dart';
 
 class Tools {
   static Column prograssBar({double padding: 25}) {
@@ -47,27 +50,6 @@ class Tools {
     return (reverse ? TextDirection.ltr : TextDirection.rtl);
   }
 
-/*
-
-  new Container(
-    height: 200.0,
-    decoration: new BoxDecoration(
-        boxShadow: [
-          BoxShadow(
-            color: Colors.red,
-            blurRadius: 25.0, // soften the shadow
-            spreadRadius: 5.0, //extend the shadow
-            offset: Offset(
-              15.0, // Move to right 10  horizontally
-              15.0, // Move to bottom 10 Vertically
-            ),
-          )
-        ],
-    );
-    child: new Text("Hello world"),
-);
-*/
-
   static Column prograssBar2({double padding: 25, int counter, int part}) {
     return (counter == part)
         ? new Column(
@@ -99,7 +81,90 @@ class Tools {
     );
   }
 
-  static getCurrencySymbol(){
+  static getCurrencySymbol() {
     return ' ؋ ';
+  }
+
+  static Future<bool> setCookieUser({String name, String field}) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    if (field.isNotEmpty && name.isNotEmpty) {
+      await prefs.setString(name, field);
+      return true;
+    }
+    return false;
+  }
+
+  static Future<bool> setCookieUserObject(WooUser user) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    if (user != null) {
+      try {
+        await prefs.setInt('user_id', user.user_id);
+        await prefs.setString('user_login', '${user.user_login}');
+        await prefs.setString('user_pass', '${user.user_pass}');
+        await prefs.setString('user_nicename', '${user.user_nicename}');
+        await prefs.setString('first_name', '${user.first_name}');
+        await prefs.setString('user_email', '${user.user_email}');
+        await prefs.setString('user_url', '${user.user_url}');
+        await prefs.setString('user_status', '${user.user_status}');
+        await prefs.setString('display_name', '${user.display_name}');
+        await prefs.setString('status', '${user.status}');
+        await prefs.setString('password', '${user.user_pass}');
+      } catch (e) {
+        print('error -> setCookieUserObject: $e');
+        return false;
+      }
+    } else {
+      print('object user is null');
+    }
+    return true;
+  }
+
+  static Future<WooUser> getCookieUserObject() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    try {
+      if (prefs.getInt('user_id') > 0) {
+        GlobalWooUser = new WooUser(
+          user_id: prefs.getInt('user_id'),
+          user_login: prefs.getString('user_login'),
+          user_pass: prefs.getString('user_pass'),
+          user_nicename: prefs.getString('user_nicename'),
+          first_name: prefs.getString('first_name'),
+          user_email: prefs.getString('user_email'),
+          user_url: prefs.getString('user_url'),
+          user_status: prefs.getString('user_status'),
+          display_name: prefs.getString('display_name'),
+          status: prefs.getString('status'),
+        );
+        return GlobalWooUser;
+      }
+    } catch (e) {
+      print('error -> getCookieUserObject: $e');
+      return null;
+    }
+    return null;
+  }
+
+  static Future<bool> isUserLogin() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    try {
+      if (prefs.getInt('user_id') > 0) {
+        return true;
+      }
+    } catch (e) {
+      print('error -> isUserLogin: $e');
+      return false;
+    }
+    return false;
+  }
+
+  static Future<bool> userLogOut() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    try {
+      prefs.clear();
+    } catch (e) {
+      print('error -> userLogOut: $e');
+      return false;
+    }
+    return true;
   }
 }

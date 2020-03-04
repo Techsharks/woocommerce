@@ -52,9 +52,9 @@ class _SingleProductState extends State<SingleProduct> {
     await (new ProductProvider()).getCartCount().then((int count) {
       setState(() {
         if (reset) {
-          globalCartCounter = count;
+          GlobalCartCounter = count;
         } else {
-          globalCartCounter += count;
+          GlobalCartCounter += count;
         }
       });
     });
@@ -70,7 +70,7 @@ class _SingleProductState extends State<SingleProduct> {
           actions: <Widget>[
             new IconButton(
                 icon: Icon(
-                  (_product == null || _product.isFavorite == 0) ? Icons.favorite : Icons.favorite_border,
+                  (_product == null || _product.isFavorite == 0) ? Icons.favorite_border : Icons.favorite,
                 ),
                 onPressed: () {
                   (new ProductProvider()).saveToFavorite((_product != null) ? _product : widget.product, _product.isFavorite).then((int id) {
@@ -108,7 +108,7 @@ class _SingleProductState extends State<SingleProduct> {
                 height: 200,
                 child: new Stack(
                   children: <Widget>[
-                    PageView(
+                    new PageView(
                       pageSnapping: true,
                       controller: _pageController,
                       children: List.generate(widget.product.images.length, (index) {
@@ -228,7 +228,7 @@ class _SingleProductState extends State<SingleProduct> {
               borderRadius: BorderRadius.circular(50),
               color: Colors.blue,
             ),
-            child: Tools.mBadge(globalCartCounter),
+            child: Tools.mBadge(GlobalCartCounter),
           ),
         ),
       ),
