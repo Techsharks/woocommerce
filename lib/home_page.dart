@@ -35,7 +35,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
   @override
   void initState() {
     super.initState();
-
+    _initDatabase();
     myList.add(new DynamicTabContent.name(title: 'Home', widget: new HomePage()));
     // myList.add(new DynamicTabContent.name(
     //     title: 'Category', widget: new CategoryPage()));
@@ -48,7 +48,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
       length: myList.length,
       vsync: _mainHomePage.createState(),
     );
-    _initDatabase();
+    
   }
 
   _initDatabase() async {

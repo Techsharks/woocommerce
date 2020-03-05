@@ -13,7 +13,8 @@ class DatabaseProvider {
     //  print('_path: $path');
 
     db = await openDatabase(path, version: versionDb, onCreate: (Database db, int version) async {
-      await db.execute('''
+      try {
+        await db.execute('''
                   create table products ( 
                       id integer primary key, 
                       total_sales integer,
@@ -69,35 +70,38 @@ class DatabaseProvider {
                       images text)
                   ''');
 
-      await db.execute('''
+        await db.execute('''
                   create table categories ( 
                       id integer primary key, 
                       title text)
                   ''');
 
-      await db.execute('''
+        await db.execute('''
                   create table product_category ( 
                       id integer primary key autoincrement, 
                       product_id integer not null,
                       cat_id integer not null)
                   ''');
 
-      await db.execute('''
+        await db.execute('''
                   create table menu (
                       id integer primary key,
                       menu text)
                   ''');
 
-      await db.execute('''
+        await db.execute('''
                   create table favorite (
                       product_id integer primary key)
                   ''');
 
-      await db.execute('''
+        await db.execute('''
                   create table cart ( 
                       id integer primary key autoincrement, 
                       product_id integer not null)
                   ''');
+      } catch (e) {
+        print('error in database_provider.dart ${StackTrace.current}');
+      }
     });
 
     return true;

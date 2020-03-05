@@ -7,6 +7,7 @@ import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
 import 'package:woocommerce/database/product_provider.dart';
 import 'package:woocommerce/model/product.dart';
+import 'package:woocommerce/pages/cart_page.dart';
 import 'package:woocommerce/pages/single/image_perview.dart';
 import 'package:woocommerce/tools/tools.dart';
 
@@ -219,6 +220,7 @@ class _SingleProductState extends State<SingleProduct> {
         floatingActionButton: GestureDetector(
           onTap: () {
             print('list cart');
+            Navigator.push(context, MaterialPageRoute(builder: (context) => new CartPage()));
           },
           child: new Container(
             height: 50,

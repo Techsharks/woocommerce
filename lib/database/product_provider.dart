@@ -219,17 +219,16 @@ class ProductProvider extends DatabaseProvider {
     return insertedID;
   }
 
-
-  Future<int> removeFormCart(Product product) async {
+  Future<int> removeFormCart(Order order) async {
     await open();
-    int insertedID = 0;
-    await db.insert('cart', {'product_id': product.id}).then((id) {
-      print('product added to car RowID: $id');
-      insertedID = id;
+    int rowID = 0;
+    await db.rawDelete('DELETE FROM cart WHERE id = ?', [order.id]).then((id) {
+      print('one item removed form cart ID: $id');
+      rowID = id;
     });
-    return insertedID;
+    await close();
+    return rowID;
   }
-  
 
   Future<List<DynamicTabContent>> getMenuOffline({id: 1}) async {
     await open();
@@ -278,7 +277,7 @@ class ProductProvider extends DatabaseProvider {
   Future<List<Order>> getOrdersOffline({int user_id}) async {
     await open();
     List<Map> maps = await db.rawQuery('''
-    select p.*, count(p.id) as quantity, count( cast(p.price AS INTEGER) ) as total_per_item , c.id as order_id from cart as c inner join products as p on p.id = c.product_id group by c.product_id
+    select p.*, count(p.id) as quantity, c.id as order_id from cart as c inner join products as p on p.id = c.product_id group by c.product_id
     ''');
 
     print('maps getOrdersOffline: ${maps.length}');

@@ -12,6 +12,7 @@ class TextInput extends StatefulWidget {
   int minLength;
   TextInputType textInputType;
   String initialValue;
+  bool isRequired;
 
   TextInput({
     Key key,
@@ -26,6 +27,7 @@ class TextInput extends StatefulWidget {
     this.minLength: 0,
     this.textInputType: TextInputType.text,
     this.initialValue: null,
+    this.isRequired: true,
   }) : super(key: key);
 
   @override
@@ -50,6 +52,7 @@ class _TextInputState extends State<TextInput> {
               initialValue: widget.initialValue,
               validator: (widget.validator == null)
                   ? (value) {
+                      if (!widget.isRequired) return null;
                       if (value.isEmpty) {
                         return '${widget.text} را وارد کنید';
                       } else if (widget.minLength != 0 && value.length < widget.minLength) {

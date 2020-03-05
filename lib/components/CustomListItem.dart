@@ -65,13 +65,15 @@ class _ProductDescription extends StatelessWidget {
           new Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
-              Text('تعداد : $quantity', style: const TextStyle(fontSize: 10.0)),
-              new Row(
-                children: <Widget>[
-                  new IconButton(icon: Icon(Icons.remove), onPressed: this.onRemoveClick),
-                  new IconButton(icon: Icon(Icons.add), onPressed: this.onAddClick),
-                ],
-              )
+              (quantity != null && quantity > 0) ? Text('تعداد : $quantity', style: const TextStyle(fontSize: 10.0)) : new Container(),
+              (onRemoveClick != null && onAddClick != null)
+                  ? new Row(
+                      children: <Widget>[
+                        new IconButton(icon: Icon(Icons.remove), onPressed: this.onRemoveClick),
+                        new IconButton(icon: Icon(Icons.add), onPressed: this.onAddClick),
+                      ],
+                    )
+                  : new Container()
             ],
           ),
         ],

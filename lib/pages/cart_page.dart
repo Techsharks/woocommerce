@@ -4,6 +4,8 @@ import 'package:woocommerce/components/CustomListItem.dart';
 import 'package:woocommerce/database/product_provider.dart';
 import 'package:woocommerce/model/order.dart';
 import 'package:woocommerce/model/product.dart';
+import 'package:woocommerce/pages/checkout/check_out.dart';
+import 'package:woocommerce/pages/profile/login_page.dart';
 import 'package:woocommerce/tools/tools.dart';
 
 import '../home_page.dart';
@@ -16,6 +18,7 @@ class CartPage extends StatefulWidget {
 class _CartPageState extends State<CartPage> {
   List<Order> orderList = List();
   int totalPayment = 0;
+  Widget messageWidget = new Container();
 
   @override
   void initState() {
@@ -24,6 +27,15 @@ class _CartPageState extends State<CartPage> {
   }
 
   _loadOrderList() async {
+    setState(() {
+      messageWidget = new SizedBox(
+        width: 20,
+        height: 20,
+        child: new CircularProgressIndicator(
+          strokeWidth: 3,
+        ),
+      );
+    });
     try {
       await (new ProductProvider()).getOrdersOffline().then((List<Order> order_list) {
         if (order_list.length > 0) {
@@ -34,7 +46,7 @@ class _CartPageState extends State<CartPage> {
         }
       });
     } catch (e) {
-      print('error in cart_page.dart');
+      print('error in cart_page.dart ${StackTrace.current}');
     }
 
     getTotalPayment();
@@ -45,8 +57,12 @@ class _CartPageState extends State<CartPage> {
     return new Directionality(
       textDirection: TextDirection.rtl,
       child: new Scaffold(
+        backgroundColor: Colors.white,
         appBar: new AppBar(
-          title: new Text('لیست سفارش شما'),
+          title: new Text(
+            'لیست سفارش شما',
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+          ),
           centerTitle: true,
           bottom: new PreferredSize(
             child: new Container(
@@ -54,7 +70,13 @@ class _CartPageState extends State<CartPage> {
               alignment: Alignment.center,
               width: MediaQuery.of(context).size.width,
               decoration: Tools.boxDecoration(),
-              child: new Text('${Tools.getCurrencySymbol()}${this.totalPayment}'),
+              child: Stack(
+                alignment: Alignment.center,
+                children: <Widget>[
+                  new Text('${Tools.getCurrencySymbol()}${this.totalPayment}'),
+                  messageWidget,
+                ],
+              ),
             ),
             preferredSize: Size(double.infinity, 48),
           ),
@@ -67,7 +89,9 @@ class _CartPageState extends State<CartPage> {
               onAddClick: () {
                 addToCart(orderList[index].product);
               },
-              onRemoveClick: () {},
+              onRemoveClick: () {
+                removeFormCart(orderList[index]);
+              },
               price: orderList[index].product.price,
               quantity: orderList[index].quantity,
               thumbnail: CachedNetworkImage(
@@ -95,6 +119,43 @@ class _CartPageState extends State<CartPage> {
             );
           }),
         ),
+        bottomNavigationBar: new Card(
+          // color: Colors.red,
+          margin: EdgeInsets.symmetric(horizontal: 15, vertical: 0),
+          elevation: 0,
+          child: RaisedButton(
+            textColor: Colors.white,
+            color: Colors.blue,
+            splashColor: Colors.red,
+            elevation: 0,
+            child: new Text('تصفیه حساب'),
+            onPressed: () {
+              Tools.isUserLogin().then((res) {
+                if (res) {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => new CheckOutPage()));
+                } else {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) {
+                      return new Directionality(
+                        textDirection: TextDirection.rtl,
+                        child: new Scaffold(
+                          appBar: new AppBar(title: new Text('ورود به سیستم')),
+                          body: new LoginPage(
+                            anyMessage: 'برای خرید شما اول وارد سیستم شوید',
+                            onLoginSuccess: () {
+                              Navigator.push(context, MaterialPageRoute(builder: (context) => new CheckOutPage()));
+                            },
+                          ),
+                        ),
+                      );
+                    }),
+                  );
+                }
+              });
+            },
+          ),
+        ),
       ),
     );
   }
@@ -105,6 +166,7 @@ class _CartPageState extends State<CartPage> {
       int price = int.parse('${((p.product.price))}');
       setState(() {
         this.totalPayment += (price > 0) ? (price * p.quantity) : price;
+        messageWidget = new Container();
       });
     });
   }
@@ -117,7 +179,11 @@ class _CartPageState extends State<CartPage> {
     });
   }
 
-  removeFormCart(Product product) async {
-    // await (new ProductProvider()).removeFormCart(product);
+  removeFormCart(Order order) async {
+    await (new ProductProvider()).removeFormCart(order).then((rowID) {
+      print('removed item[ $rowID ]');
+      this._loadOrderList();
+      GlobalCartCounter -= 1;
+    });
   }
 }

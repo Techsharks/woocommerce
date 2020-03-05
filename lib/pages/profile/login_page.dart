@@ -7,8 +7,9 @@ import 'package:woocommerce/tools/helper.dart';
 
 class LoginPage extends StatefulWidget {
   var onLoginSuccess;
+  String anyMessage;
 
-  LoginPage({Key key, this.onLoginSuccess}) : super(key: key);
+  LoginPage({Key key, this.onLoginSuccess, this.anyMessage}) : super(key: key);
 
   @override
   _LoginPageState createState() => _LoginPageState();
@@ -40,6 +41,14 @@ class _LoginPageState extends State<LoginPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
+              (widget.anyMessage != null)
+                  ? new Container(
+                      child: new Text(
+                        '${widget.anyMessage}',
+                        style: TextStyle(color: Colors.red),
+                      ),
+                    )
+                  : new Container(),
               new TextFormField(
                 controller: _controllerEmail,
                 validator: (value) {
