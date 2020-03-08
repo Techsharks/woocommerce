@@ -121,27 +121,28 @@ class _CategoryPageState extends State<CategoryPage> with AutomaticKeepAliveClie
       onRefresh: _onRefresh,
       onLoading: _onLoading,
       child: ListView.builder(
-          itemCount: 2,
-          itemBuilder: ((context, index) {
-            if (index == 0) {
-              return (bestSallerHide == false)
-                  ? ProductSlider(
-                      height: 180,
-                      sectionTag: 'part22',
-                      products: this.bestSallerProductList,
-                      title: 'پرفروش‌ها',
-                    )
-                  : new Container(
-                      child: new Text('NO Best Saller In This Category'),
-                    );
-            } else {
-              return new ProductGrid(
-                height: MediaQuery.of(context).size.height - 170,
-                products: this.recentProductsList,
-                title: 'محصولات جدید',
-              );
-            }
-          })),
+        itemCount: 2,
+        itemBuilder: ((context, index) {
+          if (index == 0) {
+            return (bestSallerHide == false)
+                ? ProductSlider(
+                    height: 180,
+                    sectionTag: 'part22',
+                    products: this.bestSallerProductList,
+                    title: 'پرفروش‌ها',
+                  )
+                : new Container(
+                    child: new Text('NO Best Saller In This Category'),
+                  );
+          } else {
+            return new ProductGrid(
+              height: 0,
+              products: this.recentProductsList,
+              title: 'محصولات جدید',
+            );
+          }
+        }),
+      ),
     );
   }
 

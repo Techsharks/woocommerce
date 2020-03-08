@@ -203,7 +203,7 @@ class ProductProvider extends DatabaseProvider {
 
   Future<int> getCartCount() async {
     await open();
-    int count = Sqflite.firstIntValue(await db.rawQuery('SELECT COUNT(*) FROM cart'));
+    int count = Sqflite.firstIntValue(await db.rawQuery('SELECT COUNT(*) FROM cart where status=0'));
     print('cart count: $count');
     return count;
   }
@@ -274,10 +274,10 @@ class ProductProvider extends DatabaseProvider {
     return false;
   }
 
-  Future<List<Order>> getOrdersOffline({int user_id}) async {
+  Future<List<Order>> getOrdersOffline({int user_id, int status: 0}) async {
     await open();
     List<Map> maps = await db.rawQuery('''
-    select p.*, count(p.id) as quantity, c.id as order_id from cart as c inner join products as p on p.id = c.product_id group by c.product_id
+    select p.*, count(p.id) as quantity, c.id as order_id from cart as c inner join products as p on p.id = c.product_id where c.status=$status group by c.product_id
     ''');
 
     print('maps getOrdersOffline: ${maps.length}');
@@ -291,7 +291,6 @@ class ProductProvider extends DatabaseProvider {
           productImageList.add(new ProductImage.fromJson(img));
         });
       }
-
       orderList.add(
         new Order.fromJson(
           product,
@@ -303,5 +302,16 @@ class ProductProvider extends DatabaseProvider {
     await close();
 
     return orderList;
+  }
+
+  Future<bool> setOrderedProducts(data) async {
+    await open();
+    db.update('cart', {'status': 1}).then((rowID) {
+      print('updated cart row $rowID');
+      data = 0;
+      return true;
+    });
+
+    return false;
   }
 }

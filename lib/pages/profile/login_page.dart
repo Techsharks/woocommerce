@@ -32,6 +32,10 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+    setState(() {
+      _controllerEmail.text = 'faizahmad.daiee@gmail.com';
+      _controllerPass.text = 'faiz@admin';
+    });
     return Container(
       color: Colors.white,
       padding: EdgeInsets.symmetric(horizontal: 20),
@@ -84,8 +88,6 @@ class _LoginPageState extends State<LoginPage> {
                           this.message = null;
                         });
                         if (!_formKey.currentState.validate()) return;
-
-                        print('login');
                         try {
                           setState(() {
                             this.isLoging = true;
@@ -97,15 +99,16 @@ class _LoginPageState extends State<LoginPage> {
                               if (user.status == Helper.LOGIN_FAILED) {
                                 this.message = 'ایمیل یا پسورد شما اشتباه می باشد';
                               } else if (user.status == Helper.LOGIN_SUCCESS) {
-                                widget.onLoginSuccess();
-                                setState(() {
-                                  GlobalWooUser.status = Helper.LOGIN_SUCCESS;
-                                });
+                                if (widget.onLoginSuccess != null) {
+                                  widget.onLoginSuccess();
+                                } else {
+                                  Navigator.pop(context);
+                                }
                               }
                             });
                           });
                         } catch (e) {
-                          print('eroor $e');
+                          print('error $e');
                           setState(() {
                             this.isLoging = false;
                             this.message = 'خطا در شبکه';

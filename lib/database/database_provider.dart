@@ -97,6 +97,7 @@ class DatabaseProvider {
         await db.execute('''
                   create table cart ( 
                       id integer primary key autoincrement, 
+                      status integer default 0,
                       product_id integer not null)
                   ''');
       } catch (e) {

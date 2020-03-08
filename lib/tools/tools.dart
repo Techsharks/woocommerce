@@ -95,9 +95,9 @@ class Tools {
   }
 
   static Future<bool> setCookieUserObject(WooUser user) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
     if (user != null) {
       try {
+        SharedPreferences prefs = await SharedPreferences.getInstance();
         await prefs.setInt('user_id', user.user_id);
         await prefs.setString('user_login', '${user.user_login}');
         await prefs.setString('user_pass', '${user.user_pass}');
@@ -109,6 +109,7 @@ class Tools {
         await prefs.setString('display_name', '${user.display_name}');
         await prefs.setString('status', '${user.status}');
         await prefs.setString('password', '${user.user_pass}');
+        await prefs.setString('avatar', '${user.avatar}');
       } catch (e) {
         print('error -> setCookieUserObject: $e');
         return false;
@@ -120,9 +121,9 @@ class Tools {
   }
 
   static Future<WooUser> getCookieUserObject() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
     try {
-      if (prefs.getInt('user_id') > 0) {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      if (prefs.getInt('user_id') != null && prefs.getInt('user_id') > 0) {
         GlobalWooUser = new WooUser(
           user_id: prefs.getInt('user_id'),
           user_login: prefs.getString('user_login'),
@@ -134,6 +135,7 @@ class Tools {
           user_status: prefs.getString('user_status'),
           display_name: prefs.getString('display_name'),
           status: prefs.getString('status'),
+          avatar: prefs.getString('avatar'),
         );
         return GlobalWooUser;
       }
@@ -145,22 +147,24 @@ class Tools {
   }
 
   static Future<bool> isUserLogin() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
     try {
-      if (prefs.getInt('user_id') > 0) {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      if (prefs.getInt('user_id') != null && prefs.getInt('user_id') > 0) {
+        await getCookieUserObject();
         return true;
       }
     } catch (e) {
-      print('error -> isUserLogin: $e');
+      print('error -> isUserLogin: [${StackTrace.current}] $e');
       return false;
     }
     return false;
   }
 
   static Future<bool> userLogOut() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
     try {
-      prefs.clear();
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.clear();
+      await getCookieUserObject();
     } catch (e) {
       print('error -> userLogOut: $e');
       return false;

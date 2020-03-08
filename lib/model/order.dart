@@ -14,4 +14,13 @@ class Order {
       quantity: _json['quantity']      
     );
   }
+
+
+  Map<String, dynamic> toMap() {
+    return <String, dynamic>{
+      'id': id,
+      'quantity': quantity,
+      'product_id': product.id,
+    };
+  }
 }

@@ -17,24 +17,28 @@ class _MainFavoritePageState extends State<MainFavoritePage> {
 
   @override
   void initState() {
-    super.initState();
     _loadProducts();
+    super.initState();
   }
 
   _loadProducts() async {
-    await (new ProductProvider()).getFavoriteProductsOffline().then((List<Product> proList) {
-      if (proList.length > 0) {
-        listProducts.clear();
-        setState(() {
-          emptyList = false;
-          listProducts.addAll(proList);
-        });
-      } else {
-        setState(() {
-          emptyList = true;
-        });
-      }
-    });
+    try {
+      await (new ProductProvider()).getFavoriteProductsOffline().then((List<Product> proList) {
+        if (proList.length > 0) {
+          listProducts.clear();
+          setState(() {
+            emptyList = false;
+            listProducts.addAll(proList);
+          });
+        } else {
+          setState(() {
+            emptyList = true;
+          });
+        }
+      });
+    } catch (e) {
+      print('error in main_favorite.dart: $e');
+    }
   }
 
   @override

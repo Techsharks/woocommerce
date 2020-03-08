@@ -16,7 +16,6 @@ import "dart:core";
 import 'WooCommerceAPI.dart';
 
 class ApiProvider {
-  // static final String baseUrl = 'https://afthinkroom.com/woo';
   static final String baseUrl = 'https://dos.af';
   static var header = {'Content-Type': 'application/json'};
   var client = new http.Client();
@@ -24,8 +23,6 @@ class ApiProvider {
 
   WooCommerceAPI wc_api = new WooCommerceAPI(
     '$baseUrl',
-    // "ck_e7c63273af43d68f821e52169f11b1af8f905e18",
-    // "cs_86502e3532603ffc194e19a277df99b33509c2b6",
     "ck_dfeeea43b87f788f717a6b75cbf5267f355f662a",
     "cs_efed92186bbf9a4f8189fb0779b289a10d39931a",
   );
@@ -126,7 +123,7 @@ class ApiProvider {
     } catch (e) {
       print('error in createing user ${e}');
     }
-    
+
     return GlobalWooUser;
   }
 
@@ -142,10 +139,13 @@ class ApiProvider {
       if (responseBody['status'] == Helper.LOGIN_SUCCESS) {
         GlobalWooUser = new WooUser.fromJson(responseBody);
         GlobalWooUser.user_pass = password;
+        GlobalWooUser.status = Helper.LOGIN_SUCCESS;
         Tools.setCookieUserObject(GlobalWooUser).then((res) {
           print('local Saved user: $res');
+          print('local Saved user: $responseBody');
         });
         print('login success info: ${GlobalWooUser.toMap()}');
+        return GlobalWooUser;
       } else if (responseBody['status'] == Helper.LOGIN_FAILED) {
         GlobalWooUser = new WooUser(status: Helper.LOGIN_FAILED);
         print('login failed !');
@@ -157,5 +157,19 @@ class ApiProvider {
     }
 
     return GlobalWooUser;
+  }
+
+  Future<bool> createOrder({var billing, var ids}) async {
+    try {
+      var response = await client.post('$baseUrl/wp-json/wc/v3/create_order', body: {'ids': ids, 'billing': billing});
+      var responseBody = json.decode(response.body);
+      print('createOrder: $responseBody');
+
+      return true;
+    } catch (e) {
+      print('error in createOrder: $e');
+    }
+
+    return false;
   }
 }

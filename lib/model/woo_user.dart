@@ -11,8 +11,9 @@ class WooUser {
   Billing billing;
   Shipping shipping;
   String status;
-  
-  WooUser({this.user_id: null, this.first_name,this.user_login: null, this.user_pass: null, this.user_nicename: null, this.user_email: null, this.user_url: null, this.user_status: null, this.display_name: null, this.billing, this.shipping, this.status});
+  String avatar;
+
+  WooUser({this.user_id: null, this.avatar, this.first_name, this.user_login: null, this.user_pass: null, this.user_nicename: null, this.user_email: null, this.user_url: null, this.user_status: null, this.display_name: null, this.billing, this.shipping, this.status});
 
   factory WooUser.fromJson(Map<String, dynamic> _user, {Billing mBilling, Shipping mShipping}) {
     return WooUser(
@@ -25,6 +26,7 @@ class WooUser {
       user_status: (_user['user_status'] != null) ? _user['user_status'] : null,
       display_name: (_user['display_name'] != null) ? _user['display_name'] : null,
       status: (_user['status'] != null) ? _user['status'] : null,
+      avatar: (_user['avatar'] != null) ? _user['avatar'] : null,
       billing: (mBilling != null) ? mBilling : Billing(),
       shipping: (mShipping != null) ? mShipping : Shipping(),
     );
@@ -40,7 +42,8 @@ class WooUser {
       'user_url': user_url,
       'user_status': user_status,
       'display_name': display_name,
-      'status':status,
+      'avatar': avatar,
+      'status': status,
     };
   }
 }
@@ -79,16 +82,16 @@ class Billing {
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
-      'first_nam': this.first_name,
-      'last_nam': this.last_name,
-      'compan': this.company,
-      'address_': this.address_1,
-      'address_': this.address_2,
-      'cit': this.city,
-      'stat': this.state,
-      'postcod': this.postcode,
-      'countr': this.country,
-      'emai': this.email,
+      'first_name': this.first_name,
+      'last_name': this.last_name,
+      'company': this.company,
+      'address_1': this.address_1,
+      'address_2': this.address_2,
+      'city': this.city,
+      'state': this.state,
+      'postcode': this.postcode,
+      'country': this.country,
+      'email': this.email,
       'phone': this.phone,
     };
   }
